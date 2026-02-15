@@ -40,6 +40,8 @@ fake_tasks_db = [
     {"task_id": 1, "task_name": "Изучить Python"},
     {"task_id": 2, "task_name": "Подключить Базу Данных"},
     {"task_id": 3, "task_name": "Выучить FastAPI"},
+    {"task_id": 4, "task_name": "Изучить FastAPI"},
+
 ]
 
 @app.get("/tasks/{task_id}")
@@ -81,5 +83,20 @@ fake_tasks_db2 = [
 ]
 
 @app.get("/tasks2")
-async def get_tasks(limit: int = 10, offset: int = 0):
-    return fake_tasks_db2[offset : offset + limit]
+async def get_tasks(limit: int = 10, offset: int = 0, keyword: str | None = None):
+    if keyword:
+        tasks = []
+
+        for task in fake_tasks_db:
+            if keyword.lower() in task["task_name"].lower():
+                tasks.append(task)
+    else:
+        tasks = fake_tasks_db2
+
+    return tasks[offset : offset + limit]
+
+@app.get("/items2/")
+async def read_items(q: str | None = None):
+    if q:
+        return {"message": f"Ищем товары по запросу: {q}"}
+    return {"message": "Показываем все товары"}

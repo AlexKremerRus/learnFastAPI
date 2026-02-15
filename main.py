@@ -14,9 +14,18 @@ async def root():
 async def get_test():
     return {"message": "Hello get_test"}
 
+users_db = {
+    1: "Alice",
+    2: "Bob",
+    3: "Charlie"
+}
+
 @app.get("/users/{user_id}")
 async def read_user(user_id: int):
-    return {"user_id": user_id}
+    for user in users_db:
+        if user == user_id:
+            return {"name": users_db[user]}
+    return {"error": "User not found"}
 
 @app.get("/users/{user_id}/tasks/{task_id}")
 async def get_user_task(user_id, task_id):
@@ -39,3 +48,20 @@ async def read_task(task_id: int):
         if task["task_id"] == task_id:
             return {"task": task["task_name"]}
     return {}
+
+@app.get("/hello/{name}")
+async def hello_name(name:str):
+    return {"message": f"Hello, {name}!"}
+
+@app.get("/product/{product_id}")
+async def read_product(product_id: int):
+    return {"product_id": product_id}
+
+
+@app.get("/flights/{from_code}/{to_code}")
+async def read_flight(from_code: str, to_code: str):
+    return {"from": from_code, "to": to_code}
+
+@app.get("/files/{file_path:path}")
+async def read_file(file_path: str):
+    return {"file": file_path}

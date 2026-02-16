@@ -100,3 +100,29 @@ async def read_items(q: str | None = None):
     if q:
         return {"message": f"Ищем товары по запросу: {q}"}
     return {"message": "Показываем все товары"}
+
+@app.get("/items")
+async def get_item(skip:int = 0, limit:int =10):
+    return {"skip": skip, "limit": limit}
+
+@app.get("/login")
+async def login(username:str, password:str):
+    return {"username": username, "password": password}
+
+
+@app.get("/users1")
+async def get_users(is_admin:bool = False):
+    return {"is_admin": is_admin}
+
+
+@app.get("/search")
+async def search(query:str | None = None):
+    if query:
+        return {"msg": f"Searching for {query}"}
+    return {"msg": "Showing all results"}
+
+@app.get("/multiply")
+async def multiply(value:int, multiplier: int = 2):
+    return {"result": value * multiplier}
+
+

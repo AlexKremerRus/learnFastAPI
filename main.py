@@ -126,3 +126,8 @@ async def multiply(value:int, multiplier: int = 2):
     return {"result": value * multiplier}
 
 
+@app.get("/sum")
+async def summa(a:int, b:int):
+    return {"result": a+b}
+
+

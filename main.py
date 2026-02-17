@@ -1,11 +1,42 @@
 from fastapi import FastAPI
-from schema import STaskAdd
+from schema import STaskAdd, SItem, SOrder, SUser, SNote, STaskAdd1
 
 app = FastAPI(
     title="Task Manager API",
     description="Учебное приложение для курса по FastAPI",
     version="1.0.0"
 )
+
+tasks = []
+
+@app.post("/tasks3")
+async def create_task(task: STaskAdd1):
+    task_dict = task.model_dump()
+    tasks.append(task_dict)
+    return task_dict
+
+db = []
+
+@app.post("/add_note")
+async def add_note(note: SNote):
+    note_dump = note.model_dump()
+    db.append(note_dump)
+    return {"msg": "Note added"}
+
+@app.post("/register")
+async def register(user: SUser):
+    answer = user.model_dump()
+    answer.pop("password")
+    return answer
+
+@app.post("/create_item")
+async def create_item(item: SItem):
+    return item
+
+@app.post("/calc")
+async def calc(order: SOrder):
+    return {"total_price": order.price*order.quantity}
+
 
 task = []
 

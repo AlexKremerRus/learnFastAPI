@@ -27,9 +27,8 @@ class STaskAdd(BaseModel):
 
 
 class SUser(BaseModel):
-    name: str = Field()
-    age: int = Field()
-    is_active: bool = Field(default=True)
+    username: str
+    password: str
 
 class SProduct(BaseModel):
     title: str = Field(...)
@@ -44,3 +43,19 @@ class SRegistration(BaseModel):
     username: str = Field(..., min_length=5, max_length=20)
     bio: str = Field(default="", max_length=100)
 
+class SItem(BaseModel):
+    name: str
+    price: int
+
+class SOrder(BaseModel):
+    item_name: str
+    price: int
+    quantity: int
+
+class SNote(BaseModel):
+    text:str
+
+class STaskAdd1(BaseModel):
+    name:str
+    priority: int
+    is_done: bool = Field(default=False)

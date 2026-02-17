@@ -1,10 +1,25 @@
 from fastapi import FastAPI
+from schema import STaskAdd
 
 app = FastAPI(
     title="Task Manager API",
     description="Учебное приложение для курса по FastAPI",
     version="1.0.0"
 )
+
+task = []
+
+@app.post("/tasks1")
+async def create_task(task:STaskAdd):
+    task.append(task.model_dump())
+    return {"ok": True, "message": "Задача добавлена"}
+
+@app.post("/POSTtasks")
+async def add_task(task: STaskAdd):
+    task_dict = task.model_dump()
+    print(type(task_dict))
+    print(task_dict)
+    return {"message": "Задача получена", "data": task}
 
 @app.get("/")
 async def root():

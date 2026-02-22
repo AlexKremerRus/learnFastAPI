@@ -1,7 +1,7 @@
-from fastapi import FastAPI
-from schema import STaskAdd, SItem, SOrder, SUser, SNote, STaskAdd1
+from fastapi import FastAPI, HTTPException, status
+from schema import STaskAdd, SItem, SOrder, SUser, SNote, STaskAdd1, SProduct
 from schemas import STask1, STaskAdd1, SUserCreate, SUserRead
-from fastapi import status
+
 
 
 
@@ -10,6 +10,8 @@ app = FastAPI(
     description="Учебное приложение для курса по FastAPI",
     version="1.0.0"
 )
+
+
 
 @app.get("/coffee", status_code=status.HTTP_418_IM_A_TEAPOT)
 async def coffee():
@@ -34,7 +36,7 @@ async def create_user(user:SUserCreate ):
 tasks = []
 
 
-@app.post("/tasks4", response_model=STask1)
+@app.post("/tasks4", response_model=STask1, status_code=status.HTTP_200_OK)
 async def create_task(task: STaskAdd1):
     # 1. Превращаем Pydantic-модель в словарь
     task_dict = task.model_dump()
@@ -136,10 +138,19 @@ fake_tasks_db = [
 
 @app.get("/tasks/{task_id}")
 async def read_task(task_id: int):
+    current_task = None
+
     for task in fake_tasks_db:
         if task["task_id"] == task_id:
-            return {"task": task["task_name"]}
-    return {}
+            current_task= task
+            break
+    if current_task is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Задача с ID {task_id} не найдена"
+        )
+
+    return current_task
 
 @app.get("/hello/{name}")
 async def hello_name(name:str):

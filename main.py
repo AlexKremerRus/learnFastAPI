@@ -2,15 +2,51 @@ from fastapi import FastAPI, HTTPException, status
 from schema import STaskAdd, SItem, SOrder, SUser, SNote, STaskAdd1, SProduct
 from schemas import STask1, STaskAdd1, SUserCreate, SUserRead
 
-
-
-
 app = FastAPI(
     title="Task Manager API",
     description="Учебное приложение для курса по FastAPI",
     version="1.0.0"
 )
 
+warehouse = {
+    1: {"name": "Apple", "stock": 10},
+    2: {"name": "Banana", "stock": 5}
+}
+
+@app.post("/buy/{product_id}")
+async def buy(product_id: int, count:int):
+    if product_id not in warehouse:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "Product not found")
+    if warehouse[product_id]["stock"] < count:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail= "Not enough stock")
+    warehouse[product_id]["stock"] -= count
+    return {"msg": "Bought!"}
+
+
+items = {
+    1: {"name": "Laptop", "price": 1000},
+    2: {"name": "Mouse", "price": 20}
+}
+
+@app.put("/items/{item_id}")
+async def update_item(item_id: int, price: int):
+     if item_id not in items:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+     items[item_id]["price"] = price
+     return items[item_id]
+
+
+@app.get("/admin_only")
+async def admin_only(token:str):
+    if token != "secret_token":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="Access denied")
+    return {"message": "Welcome, Admin!"}
+
+@app.get("/divide")
+async def divide(a:int, b:int):
+    if b==0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Division by zero")
+    return {"result": a / b}
 
 
 @app.get("/coffee", status_code=status.HTTP_418_IM_A_TEAPOT)
@@ -114,10 +150,15 @@ users_db = {
 
 @app.get("/users/{user_id}")
 async def read_user(user_id: int):
+    content = None
     for user in users_db:
         if user == user_id:
-            return {"name": users_db[user]}
-    return {"error": "User not found"}
+            content = {"name": users_db[user]}
+            # return {"name": users_db[user]}
+
+    if content is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail= "User not found")
+    return content
 
 @app.get("/users/{user_id}/tasks/{task_id}")
 async def get_user_task(user_id, task_id):

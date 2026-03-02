@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
 from schema import STaskAdd, SItem, SOrder, SUser, SNote, STaskAdd1, SProduct
-from schemas import STask1, STaskAdd1, SUserCreate, SUserRead
+from schemas import STask1, STaskAdd1, SUserCreate, SUserRead, SUserUpdate
 
 app = FastAPI(
     title="Task Manager API",
@@ -8,10 +8,40 @@ app = FastAPI(
     version="1.0.0"
 )
 
+users_db = {
+    1: {"name": "Alice", "email": "alice@example.com"}
+}
+
+@app.put("/users/{user_id}")
+async def update_user(user:SUserUpdate, user_id:int):
+    if user_id not in users_db:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    # print(user.model_dump())
+    # print(type(user.model_dump()))
+    user_dict = user.model_dump()
+    users_db[user_id] = user_dict
+    # print(users_db[user_id])
+    return users_db[user_id]
+
 warehouse = {
     1: {"name": "Apple", "stock": 10},
     2: {"name": "Banana", "stock": 5}
 }
+
+@app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_task(task_id: int):
+    # Используем enumerate, чтобы получить и индекс, и саму задачу
+    for index, task in enumerate(tasks):
+        if task["id"] == task_id:
+            # Удаляем элемент списка по индексу
+            tasks.pop(index)
+            # Возвращаем "ничего". Это превратится в пустой ответ 204.
+            return
+            # Если цикл прошел и ничего не нашли
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Задача не найдена"
+    )
 
 @app.post("/buy/{product_id}")
 async def buy(product_id: int, count:int):

@@ -37,3 +37,8 @@ class SUserCreate(SUserBase):
 class SUserRead(SUserBase):
     id: int
 
+class SUserUpdate(BaseModel):
+    name: str|None = None
+    email: str|None = None
+
+

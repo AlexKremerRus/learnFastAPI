@@ -41,4 +41,9 @@ class SUserUpdate(BaseModel):
     name: str|None = None
     email: str|None = None
 
+class STaskPatch(BaseModel):
+    title: str|None = None
+    priority: int|None = None
+
+
 

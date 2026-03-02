@@ -1,12 +1,26 @@
 from fastapi import FastAPI, HTTPException, status
 from schema import STaskAdd, SItem, SOrder, SUser, SNote, STaskAdd1, SProduct
-from schemas import STask1, STaskAdd1, SUserCreate, SUserRead, SUserUpdate
+from schemas import STask1, STaskAdd1, SUserCreate, SUserRead, SUserUpdate, STaskPatch
 
 app = FastAPI(
     title="Task Manager API",
     description="Учебное приложение для курса по FastAPI",
     version="1.0.0"
 )
+tasks_db = {
+    1: {"title": "Learn FastAPI", "priority": 1}
+}
+
+@app.patch("/tasks/{task_id}")
+def patch_task(task_id:int, task:STaskPatch):
+    if task_id not in tasks_db:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    task_dict = task.model_dump(exclude_unset=True)
+    print(task_dict)
+
+    tasks_db[task_id].update(task_dict)
+
+    return tasks_db[task_id]
 
 users_db = {
     1: {"name": "Alice", "email": "alice@example.com"}

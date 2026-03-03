@@ -7,6 +7,27 @@ app = FastAPI(
     description="Учебное приложение для курса по FastAPI",
     version="1.0.0"
 )
+
+
+users_db = {
+    1: {"id": 1, "name": "John", "is_active": True}
+}
+
+@app.delete("/users/{user_id}", status_code=status.HTTP_200_OK)
+async def delete_name(user_id: int):
+    if user_id not in users_db:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    users_db[user_id]['is_active'] = False
+    return users_db[user_id]
+
+names = ["Alice", "Bob", "Charlie"]
+
+@app.delete("/names/{index}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_name(index: int):
+    if index > len(names):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Index out of range")
+    return names.pop(index)
+
 tasks_db = {
     1: {"title": "Learn FastAPI", "priority": 1}
 }
